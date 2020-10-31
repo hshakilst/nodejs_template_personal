@@ -1,10 +1,11 @@
 const express = require("express");
-const passport = require("passport");
 const appRoot = require("app-root-path");
+const jwt = require("jsonwebtoken");
+const passport = require(appRoot + "/modules/auth");
 const User = require(appRoot + "/models/user");
 const router = express.Router();
 
-router.post("/login", async(req, res, next) => {
+router.post("/", async(req, res, next) => {
     passport.authenticate("login", async(err, user, info) => {
         try {
             if (err || !user) {
@@ -17,9 +18,12 @@ router.post("/login", async(req, res, next) => {
                 if (error) return next(error);
 
                 const body = { _id: user._id, email: user.email };
-                const token = jwt.sign({ user: body }, process.env.SECRET);
+                const token = jwt.sign({ user: body }, process.env.SECRET, {
+                    algorithm: "HS384",
+                    expiresIn: "7d",
+                });
 
-                return res.json({ token });
+                return res.json({ token: "Bearer " + token });
             });
         } catch (error) {
             return next(error);

@@ -1,9 +1,9 @@
 require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
-// const cookieParser = require("cookie-parser");
+const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
-// const passport = require("passport");
+const passport = require("passport");
 const indexRouter = require("./routes/index");
 // const expressSession = require('express-session');
 // const passport_jwt = require('passport-jwt');
@@ -50,15 +50,6 @@ app.use(
     })
 );
 
-/**
- * Parser setup
- */
-app.use(
-    bodyParser.urlencoded({
-        extended: false,
-        limit: "1kb",
-    })
-);
 
 /**
  * Sentry RequestHandler creates a separate execution context using domains,
@@ -87,6 +78,25 @@ mongoose
     })
     .then(() => console.log("MongoDB connected..."))
     .catch((err) => console.log(err));
+
+const db = mongoose.connection;
+db.on("error", function(err) {
+    console.log(err);
+});
+db.once("open", function() {
+    console.log("Connection succeeded.");
+});
+/**
+ * Parser setup
+ */
+
+app.use(
+    bodyParser.urlencoded({
+        extended: true,
+    })
+);
+
+app.use(bodyParser.json());
 
 // app.use(
 //     cookieParser({
@@ -131,18 +141,18 @@ app.use("/", indexRouter);
  * Error handler
  */
 app.use(function(err, req, res, next) {
+    console.log(err);
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = process.env.NODE_ENV === "DEVELOPMENT" ? err : {};
     // add this line to include winston logging
     winston.error(
-        `${err.status || 500} - ${err.message} - ${req.originalUrl} - ${
-      req.method
-    } - ${req.ip}`
+        `${err.status || 500} - ${err.message} - 
+        ${req.originalUrl} - ${req.method} - ${req.ip}`
     );
     // render the error page
     res.status(err.status || 500);
-    res.json({ msg: "Internal server error!" });
+    res.json({ code: err.code || 500, msg: err.message });
 });
 
 app.listen(process.env.PORT, function() {

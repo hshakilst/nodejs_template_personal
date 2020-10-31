@@ -3,21 +3,55 @@ const localStrategy = require("passport-local").Strategy;
 const JWTStrategy = require("passport-jwt").Strategy;
 const ExtractJWT = require("passport-jwt").ExtractJwt;
 const appRoot = require("app-root-path");
+const { body, validationResult } = require("express-validator");
 const User = require(appRoot + "/models/user");
+
+// passport.use(
+//     new localStrategy(function(username, password, cb) {
+//         User.findOne({
+//                 username
+//             },
+//             function(err, user) {
+//                 if (err) {
+//                     return cb(err);
+//                 }
+//                 if (!user) {
+//                     return cb(null, false);
+//                 }
+//                 if (user.password != password) {
+//                     return cb(null, false);
+//                 }
+//                 return cb(null, user);
+//             });
+//     })
+// );
 
 passport.use(
     "signup",
     new localStrategy({
-            usernameField: "email",
+            usernameField: "username",
             passwordField: "password",
             passReqToCallback: true,
         },
-        async(email, password, done) => {
+        async(req, username, password, done) => {
             try {
-                const user = await UserModel.create({ email, password });
-
-                return done(null, user);
+                const user = await User.findOne({ username });
+                if (user)
+                    throw { code: 409, message: "Username not available!" };
+                else {
+                    const user = await User.create({
+                        name: req.body.name,
+                        username: req.body.username,
+                        email: req.body.email,
+                        password: req.body.password,
+                        role: req.body.role,
+                        avatarUrl: req.body.avatarUrl,
+                        orgId: req.body.orgId,
+                    });
+                    return done(null, user);
+                }
             } catch (error) {
+                console.log(error.code);
                 done(error);
             }
         }
@@ -32,7 +66,7 @@ passport.use(
         },
         async(email, password, done) => {
             try {
-                const user = await UserModel.findOne({ email });
+                const user = await User.findOne({ email });
 
                 if (!user) {
                     return done(null, false, {
@@ -60,13 +94,19 @@ passport.use(
 
 passport.use(
     new JWTStrategy({
-            secretOrKey: "TOP_SECRET",
-            jwtFromRequest: ExtractJWT.fromUrlQueryParameter("secret_token"),
+            secretOrKey: process.env.SECRET,
+            jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
         },
-        async(token, done) => {
+        async(payload, done) => {
             try {
-                return done(null, token.user);
+                if (payload.user) {
+                    const user = await User.findById(payload.user._id);
+                    if (user && user.email && user.email === payload.user.email)
+                        return done(null, payload.user);
+                    else throw { code: 418, message: "I'm a teapot!" };
+                } else throw { status: 418, code: 418, message: "I'm a teapot!" };
             } catch (error) {
+                console.log(error);
                 done(error);
             }
         }
@@ -75,11 +115,11 @@ passport.use(
 
 // var cookieExtractor = function(req) {
 //     var token = null;
-//     //if (req && req.cookies) token = req.cookies['jwt'];     //need more specific validation or possible attack vector
+//     if (req && req.cookies) token = req.cookies.jwt; //need more specific validation or possible attack vector
 //     return token;
 // };
 
-// // Setup work and export for the JWT passport strategy
+// Setup work and export for the JWT passport strategy
 // module.exports = function(passport) {
 //     var opts = {};
 //     opts.jwtFromRequest = cookieExtractor || ExtractJwt.fromAuthHeaderAsBearerToken();
@@ -99,5 +139,18 @@ passport.use(
 //         });
 //     }));
 // };
+
+// passport.serializeUser(function(user, cb) {
+//     cb(null, user._id);
+// });
+
+// passport.deserializeUser(function(_id, cb) {
+//     User.findById(_id, function(err, user) {
+//         if (err) {
+//             return cb(err);
+//         }
+//         cb(null, user);
+//     });
+// });
 
 module.exports = passport;

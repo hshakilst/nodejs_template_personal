@@ -1,16 +1,16 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
-var UserSchema = new mongoose.Schema({
-    // name: {
-    //     type: String,
-    //     required: true,
-    // },
-    // username: {
-    //     type: String,
-    //     required: true,
-    //     unique: true,
-    // },
+const UserSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+    },
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+    },
     email: {
         type: String,
         required: true,
@@ -20,15 +20,20 @@ var UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    // role: {
-    //     type: String,
-    //     enum: ["Employee", "Manager", "Admin"],
-    //     default: "Employee",
-    // },
-    // avatarUrl: {
-    //     type: String,
-    //     required: false,
-    // },
+    role: {
+        type: String,
+        enum: ["Employee", "Manager", "Admin"],
+        default: "Employee",
+    },
+    avatarUrl: {
+        type: String,
+        required: false,
+    },
+    orgId: {
+        type: String,
+        required: true,
+        unique: true
+    },
 });
 
 UserSchema.pre("save", async function(next) {
@@ -41,7 +46,7 @@ UserSchema.pre("save", async function(next) {
     }
 });
 
-UserSchema.methods.comparePassword = async function(password) {
+UserSchema.methods.isValidPassword = async function(password) {
     const user = this;
     const compare = await bcrypt.compare(password, user.password);
     return compare;
