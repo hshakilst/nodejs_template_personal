@@ -1,37 +1,19 @@
 const express = require("express");
 const appRoot = require("app-root-path");
-const { body } = require("express-validator");
+const { checkSchema, validationResult } = require("express-validator");
 const passport = require(appRoot + "/modules/auth");
 // const User = require(appRoot + "/models/user");
-const validate = require(appRoot + '/modules/validate');
+const userValidator = require(appRoot + "/validators/user.validator");
+const userController = require(appRoot + "/controllers/user.controller");
+
 const router = express.Router();
 
-router.post(
-    "/",
-    validate([
-        body("name").not().isEmpty({ ignore_whitespace: true }).trim().escape(),
-        body("username").not().isEmpty({ ignore_whitespace: true }).trim().escape(),
-        body("email")
-        .not()
-        .isEmpty({ ignore_whitespace: true })
-        .isEmail()
-        .normalizeEmail(),
-        body("password")
-        .not()
-        .isEmpty()
-        .isLength({ min: 7 }),
-        body("role").not().isEmpty({ ignore_whitespace: true }).trim().escape(),
-        body("orgId").not().isEmpty({ ignore_whitespace: true }).isMongoId().trim().escape(),
-    ]),
-    passport.authenticate("signup", { session: false }),
-    async(req, res, next) => {
-        res.json({
-            message: "Signup successful!",
-            user: req.user,
-        });
-    }
-);
-
+router.post("/", checkSchema(userValidator), async(req, res, next) => {
+    const errors = validationResult(req);
+    if (errors.isEmpty()) {
+        userController.insertOne(req, res, next);
+    } else res.status(400).json({ errors: errors.array() });
+});
 
 // router.post("/", function(req, res) {
 //     if (!(req.body.email || req.body.password)) {

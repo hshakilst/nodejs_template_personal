@@ -29,11 +29,11 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
-    orgId: {
-        type: String,
-        required: true,
-        unique: true
-    },
+    // orgId: {
+    //     type: String,
+    //     required: true,
+    //     unique: true,
+    // }
 });
 
 UserSchema.pre("save", async function(next) {

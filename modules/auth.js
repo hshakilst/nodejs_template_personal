@@ -4,7 +4,7 @@ const JWTStrategy = require("passport-jwt").Strategy;
 const ExtractJWT = require("passport-jwt").ExtractJwt;
 const appRoot = require("app-root-path");
 const { body, validationResult } = require("express-validator");
-const User = require(appRoot + "/models/user");
+const User = require(appRoot + "/models/user.model");
 
 // passport.use(
 //     new localStrategy(function(username, password, cb) {
@@ -26,37 +26,24 @@ const User = require(appRoot + "/models/user");
 //     })
 // );
 
-passport.use(
-    "signup",
-    new localStrategy({
-            usernameField: "username",
-            passwordField: "password",
-            passReqToCallback: true,
-        },
-        async(req, username, password, done) => {
-            try {
-                const user = await User.findOne({ username });
-                if (user)
-                    throw { code: 409, message: "Username not available!" };
-                else {
-                    const user = await User.create({
-                        name: req.body.name,
-                        username: req.body.username,
-                        email: req.body.email,
-                        password: req.body.password,
-                        role: req.body.role,
-                        avatarUrl: req.body.avatarUrl,
-                        orgId: req.body.orgId,
-                    });
-                    return done(null, user);
-                }
-            } catch (error) {
-                console.log(error.code);
-                done(error);
-            }
-        }
-    )
-);
+// passport.use(
+//     "signup",
+//     new localStrategy({
+//             usernameField: "username",
+//             passwordField: "password",
+//             passReqToCallback: true,
+//         },
+//         async(req, username, password, done) => {
+//             try {
+//                 const user = await User.findOne({ username });
+//                 if (user) throw { code: 409, message: "Username not available!" };
+//                 return done(null, user);
+//             } catch (error) {
+//                 done(error);
+//             }
+//         }
+//     )
+// );
 
 passport.use(
     "login",

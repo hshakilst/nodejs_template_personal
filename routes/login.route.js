@@ -2,7 +2,7 @@ const express = require("express");
 const appRoot = require("app-root-path");
 const jwt = require("jsonwebtoken");
 const passport = require(appRoot + "/modules/auth");
-const User = require(appRoot + "/models/user");
+const User = require(appRoot + "/models/user.model");
 const router = express.Router();
 
 router.post("/", async(req, res, next) => {
