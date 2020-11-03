@@ -1,6 +1,6 @@
 const appRootPath = require("app-root-path");
 const express = require("express");
-const passport = require(appRootPath + "/modules/auth");
+const passport = require(appRootPath + "/modules/passport");
 const root = require("./root.route");
 const login = require("./login.route");
 const signup = require("./signup.route");

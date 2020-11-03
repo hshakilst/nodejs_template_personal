@@ -29,6 +29,27 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
+    isVerified: {
+        type: Boolean,
+        default: false,
+
+    },
+    passwordResetToken: {
+        type: String,
+        required: false,
+    },
+    passwordResetExpires: {
+        type: Date,
+        required: false,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    }
     // orgId: {
     //     type: String,
     //     required: true,

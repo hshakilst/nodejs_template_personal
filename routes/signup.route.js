@@ -1,7 +1,7 @@
 const express = require("express");
 const appRoot = require("app-root-path");
 const { checkSchema, validationResult } = require("express-validator");
-const passport = require(appRoot + "/modules/auth");
+const passport = require(appRoot + "/modules/passport");
 // const User = require(appRoot + "/models/user");
 const userValidator = require(appRoot + "/validators/user.validator");
 const userController = require(appRoot + "/controllers/user.controller");

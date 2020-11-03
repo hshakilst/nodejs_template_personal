@@ -1,7 +1,7 @@
 const express = require("express");
 const appRoot = require("app-root-path");
 const jwt = require("jsonwebtoken");
-const passport = require(appRoot + "/modules/auth");
+const passport = require(appRoot + "/modules/passport");
 const User = require(appRoot + "/models/user.model");
 const router = express.Router();
 
@@ -9,7 +9,7 @@ router.post("/", async(req, res, next) => {
     passport.authenticate("login", async(err, user, info) => {
         try {
             if (err || !user) {
-                const error = new Error("An error occurred.");
+                const error = new Error("An error occurred while processing authentication request.");
 
                 return next(error);
             }

@@ -53,11 +53,13 @@ passport.use(
         },
         async(email, password, done) => {
             try {
-                const user = await User.findOne({ email });
+                const user = await User.findOne({ email },
+                    "name username email role avatarUrl isVerified createdAt updatedAt"
+                );
 
                 if (!user) {
                     return done(null, false, {
-                        message: "Wrong username or password!",
+                        message: "Invalid email or password.",
                     });
                 }
 
@@ -65,12 +67,18 @@ passport.use(
 
                 if (!validate) {
                     return done(null, false, {
-                        message: "Wrong username or password!",
+                        message: "Invalid email or password.",
+                    });
+                }
+
+                if (!user.isVerified) {
+                    return done(null, false, {
+                        message: "Your account has not been verified. Please go to your mailbox and verify the account.",
                     });
                 }
 
                 return done(null, user, {
-                    message: "Log in successful!",
+                    message: "Welcome " + user.name,
                 });
             } catch (error) {
                 return done(error);
@@ -90,10 +98,14 @@ passport.use(
                     const user = await User.findById(payload.user._id);
                     if (user && user.email && user.email === payload.user.email)
                         return done(null, payload.user);
-                    else throw { code: 418, message: "I'm a teapot!" };
-                } else throw { status: 418, code: 418, message: "I'm a teapot!" };
+                    // else throw { code: 418, message: "I'm a teapot!" };
+                }
+                // else throw { status: 418, code: 418, message: "I'm a teapot!" };
+                return done(
+                    new Error({ status: 418, code: 418, message: "I'm a teapot." })
+                );
             } catch (error) {
-                console.log(error);
+                // console.log(error);
                 done(error);
             }
         }

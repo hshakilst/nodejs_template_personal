@@ -22,7 +22,7 @@ const userValidator = {
         },
         custom: {
             options: (value) => {
-                if (!value.match(/^[a-zA-Z ]{4,64}$/gm)) {
+                if (!value.match(/^[a-zA-Z ]{5,}$/gm)) {
                     throw new Error(
                         `Name must contain only letters and special character: " "(space).`
                     );
@@ -47,7 +47,7 @@ const userValidator = {
         },
         custom: {
             options: async(value) => {
-                if (!value.match(/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{4,32}$/gim)) {
+                if (!value.match(/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{4,}$/gim)) {
                     throw new Error(
                         'Username must contain only letters, numbers and special characters: "." (dot) and "_" (underscore).'
                     );
@@ -73,13 +73,15 @@ const userValidator = {
                 const user = await User.findOne({ email: value }, "email");
                 if (user) {
                     return Promise.reject(
-                        "This email is associated with another account. If this is yours try resetting the password."
+                        "This email is already associated with another account. If this is yours try resetting the password."
                     );
                 }
             },
         },
         trim: true,
-        normalizeEmail: true,
+        normalizeEmail: {
+            options: { remove_dots: false },
+        },
         escape: true,
     },
     password: {
@@ -91,13 +93,12 @@ const userValidator = {
             errorMessage: "Password must be at least 8 characters long.",
             options: {
                 min: 8,
-                max: 64,
             },
         },
         custom: {
             options: (value) => {
                 if (!value.match(
-                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,40}$/gm
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/gm
                     )) {
                     throw new Error(
                         "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character."
@@ -106,8 +107,6 @@ const userValidator = {
                 return true;
             },
         },
-        trim: true,
-        escape: true,
     },
     role: {
         isEmpty: {
@@ -133,7 +132,7 @@ const userValidator = {
             },
         },
         isURL: {
-            errorMessage: "Profile image must be a valid URL."
+            errorMessage: "Profile image must be a valid URL.",
         },
         trim: true,
         escape: true,
