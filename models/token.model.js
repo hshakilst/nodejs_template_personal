@@ -1,11 +1,13 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+
 const TokenSchema = new mongoose.Schema({
     _userId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: "User",
     },
-    token: {
+    code: {
         type: String,
         required: true,
     },

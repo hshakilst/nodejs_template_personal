@@ -1,7 +1,8 @@
 // require("dotenv").config();
 const nodemailer = require("nodemailer");
 let transporter = null;
-async function initMailInstance() {
+
+function initMailInstance() {
     // create reusable transporter object using the default SMTP transport
     if (transporter === null)
         transporter = nodemailer.createTransport({
@@ -20,23 +21,28 @@ async function initMailInstance() {
 }
 
 module.exports = {
-    mailAccountVerification: async function(link, user) {
+    sendVerificationToken: async function(token, user) {
+        let link = `http://127.0.0.1:3000/user/verification/${token}`;
         let transporter = initMailInstance();
-        let info = await transporter.sendMail({
+        return await transporter.sendMail({
             from: '"ERPSORS" <noreply@erpsors.com>', // sender address
-            to: "hshakilst@gmail.com", // list of receivers
+            to: user.email, // list of receivers
             subject: "ERPSORS – Account Verification", // Subject line
             text: `
-            Hello ${user},
+            Hello ${user.username},
             You registered an account on erpsors.com, before being able to use your account
             you need to verify that this is your email address by clicking here:${link}
             Kind Regards,
-            ERPSORS Team`, // plain text body
+            ERP SORS Team`, // plain text body
             // html: process.env.EMAIL_TEMPLATE, // html body
+        }).then(info => {
+            return info;
+        }).catch(error => {
+            return error;
         });
         console.log("Message sent: %s", info.messageId);
     },
-    mailPasswordReset: {},
+    sendPasswordResetToken: {},
 };
 
 // main().catch(console.error);
