@@ -6,25 +6,25 @@ const appRoot = require("app-root-path");
 const { body, validationResult } = require("express-validator");
 const User = require(appRoot + "/models/user.model");
 
-// passport.use(
-//     new localStrategy(function(username, password, cb) {
-//         User.findOne({
-//                 username
-//             },
-//             function(err, user) {
-//                 if (err) {
-//                     return cb(err);
-//                 }
-//                 if (!user) {
-//                     return cb(null, false);
-//                 }
-//                 if (user.password != password) {
-//                     return cb(null, false);
-//                 }
-//                 return cb(null, user);
-//             });
-//     })
-// );
+passport.use(
+    new localStrategy(function(username, password, cb) {
+        User.findOne({
+                username
+            },
+            function(err, user) {
+                if (err) {
+                    return cb(err);
+                }
+                if (!user) {
+                    return cb(null, false);
+                }
+                if (user.password != password) {
+                    return cb(null, false);
+                }
+                return cb(null, user);
+            });
+    })
+);
 
 // passport.use(
 //     "signup",
@@ -53,9 +53,7 @@ passport.use(
         },
         async(email, password, done) => {
             try {
-                const user = await User.findOne({ email },
-                    "name username email role avatarUrl isVerified createdAt updatedAt"
-                );
+                const user = await User.findOne({ email });
 
                 if (!user) {
                     return done(null, false, {
@@ -111,33 +109,6 @@ passport.use(
         }
     )
 );
-
-// var cookieExtractor = function(req) {
-//     var token = null;
-//     if (req && req.cookies) token = req.cookies.jwt; //need more specific validation or possible attack vector
-//     return token;
-// };
-
-// Setup work and export for the JWT passport strategy
-// module.exports = function(passport) {
-//     var opts = {};
-//     opts.jwtFromRequest = cookieExtractor || ExtractJwt.fromAuthHeaderAsBearerToken();
-//     opts.secretOrKey = process.env.SECRET;
-//     passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-//         User.findOne({
-//             id: jwt_payload.id
-//         }, function(err, user) {
-//             if (err) {
-//                 return done(err, false);
-//             }
-//             if (user) {
-//                 done(null, user);
-//             } else {
-//                 done(null, false);
-//             }
-//         });
-//     }));
-// };
 
 // passport.serializeUser(function(user, cb) {
 //     cb(null, user._id);

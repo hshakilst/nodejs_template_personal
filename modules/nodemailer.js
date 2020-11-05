@@ -24,25 +24,26 @@ module.exports = {
     sendVerificationToken: async function(token, user) {
         let link = `http://127.0.0.1:3000/user/verification/${token}`;
         let transporter = initMailInstance();
-        return await transporter.sendMail({
-            from: '"ERPSORS" <noreply@erpsors.com>', // sender address
-            to: user.email, // list of receivers
-            subject: "ERPSORS – Account Verification", // Subject line
-            text: `
-            Hello ${user.username},
-            You registered an account on erpsors.com, before being able to use your account
-            you need to verify that this is your email address by clicking here:${link}
-            Kind Regards,
-            ERP SORS Team`, // plain text body
-            // html: process.env.EMAIL_TEMPLATE, // html body
-        }).then(info => {
-            return info;
-        }).catch(error => {
-            return error;
-        });
-        console.log("Message sent: %s", info.messageId);
+        return await transporter
+            .sendMail({
+                from: '"ERPSORS" <noreply@erpsors.com>', // sender address
+                to: user.email, // list of receivers
+                subject: "ERPSORS – Account Verification", // Subject line
+                text: `
+        Hello ${user.username},
+        
+        You registered an account on erpsors.com, before being able to use your account you need to verify that this is your email address by clicking here:${link}.
+        
+        Kind Regards,
+        ERP SORS Team`, // plain text body
+                // html: process.env.EMAIL_TEMPLATE, // html body
+            })
+            .then((info) => {
+                return info;
+            })
+            .catch((error) => {
+                return error;
+            });
     },
     sendPasswordResetToken: {},
 };
-
-// main().catch(console.error);

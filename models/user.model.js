@@ -32,16 +32,17 @@ const UserSchema = new mongoose.Schema({
     isVerified: {
         type: Boolean,
         default: false,
+        required: true,
 
     },
-    passwordResetToken: {
-        type: String,
-        required: false,
-    },
-    passwordResetExpires: {
-        type: Date,
-        required: false,
-    },
+    // passwordResetToken: {
+    //     type: String,
+    //     required: false,
+    // },
+    // passwordResetExpires: {
+    //     type: Date,
+    //     required: false,
+    // },
     createdAt: {
         type: Date,
         default: Date.now,

@@ -80,7 +80,9 @@ const userValidator = {
         },
         trim: true,
         normalizeEmail: {
-            options: { remove_dots: false },
+            options: {
+                gmail_remove_dots: false,
+            },
         },
         escape: true,
     },

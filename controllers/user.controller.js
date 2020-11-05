@@ -11,12 +11,18 @@ module.exports = {
             role: req.body.role,
             avatarUrl: req.body.avatarUrl,
         });
-        return await user.save()
-            .then(user => {
+        return await user
+            .save()
+            .then((user) => {
                 return {
-                    id: user._id,
+                    _id: user._id,
                     username: user.username,
                     email: user.email,
+                    role: user.role,
+                    avatarUrl: user.avatarUrl,
+                    isVerified: user.isVerified,
+                    createdAt: user.createdAt,
+                    updatedAt: user.updated,
                 };
             })
             .catch((error) => {

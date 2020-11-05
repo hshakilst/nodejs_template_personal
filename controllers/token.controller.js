@@ -3,9 +3,9 @@ const crypto = require("crypto");
 const Token = require(appRoot + "/models/token.model");
 
 module.exports = {
-    generateToken: async function(userIdEmail) {
+    generateToken: async function(userId) {
         const token = new Token({
-            _userId: userIdEmail.id,
+            _userId: userId,
             code: crypto.randomBytes(32).toString("hex"),
         });
         return await token
