@@ -7,45 +7,6 @@ const { body, validationResult } = require("express-validator");
 const User = require(appRoot + "/models/user.model");
 
 passport.use(
-    new localStrategy(function(username, password, cb) {
-        User.findOne({
-                username
-            },
-            function(err, user) {
-                if (err) {
-                    return cb(err);
-                }
-                if (!user) {
-                    return cb(null, false);
-                }
-                if (user.password != password) {
-                    return cb(null, false);
-                }
-                return cb(null, user);
-            });
-    })
-);
-
-// passport.use(
-//     "signup",
-//     new localStrategy({
-//             usernameField: "username",
-//             passwordField: "password",
-//             passReqToCallback: true,
-//         },
-//         async(req, username, password, done) => {
-//             try {
-//                 const user = await User.findOne({ username });
-//                 if (user) throw { code: 409, message: "Username not available!" };
-//                 return done(null, user);
-//             } catch (error) {
-//                 done(error);
-//             }
-//         }
-//     )
-// );
-
-passport.use(
     "login",
     new localStrategy({
             usernameField: "email",
@@ -54,32 +15,37 @@ passport.use(
         async(email, password, done) => {
             try {
                 const user = await User.findOne({ email });
-
-                if (!user) {
-                    return done(null, false, {
-                        message: "Invalid email or password.",
-                    });
+                if (user === null) {
+                    return done(
+                        new Error(
+                            "Invalid email or password.",
+                        ),
+                        false
+                    );
                 }
 
                 const validate = await user.isValidPassword(password);
-
                 if (!validate) {
-                    return done(null, false, {
-                        message: "Invalid email or password.",
-                    });
+                    return done(
+                        new Error(
+                            "Invalid email or password."
+                        ),
+                        false
+                    );
                 }
 
                 if (!user.isVerified) {
-                    return done(null, false, {
-                        message: "Your account has not been verified. Please go to your mailbox and verify the account.",
-                    });
+                    return done(
+                        new Error(
+                            "Your account has not been verified. Please go to your mailbox and verify the account."
+                        ),
+                        false
+                    );
                 }
-
-                return done(null, user, {
-                    message: "Welcome " + user.name,
-                });
+                console.log(user);
+                done(false, user);
             } catch (error) {
-                return done(error);
+                done(error);
             }
         }
     )
@@ -94,33 +60,21 @@ passport.use(
             try {
                 if (payload.user) {
                     const user = await User.findById(payload.user._id);
-                    if (user && user.email && user.email === payload.user.email)
-                        return done(null, payload.user);
-                    // else throw { code: 418, message: "I'm a teapot!" };
+                    if (user && user.email === payload.user.email)
+                        return done(false, payload.user);
                 }
-                // else throw { status: 418, code: 418, message: "I'm a teapot!" };
                 return done(
-                    new Error({ status: 418, code: 418, message: "I'm a teapot." })
+                    new Error({
+                        status: 418,
+                        code: 418,
+                        message: "I'm a teapot.",
+                    })
                 );
             } catch (error) {
-                // console.log(error);
-                done(error);
+                next(error);
             }
         }
     )
 );
-
-// passport.serializeUser(function(user, cb) {
-//     cb(null, user._id);
-// });
-
-// passport.deserializeUser(function(_id, cb) {
-//     User.findById(_id, function(err, user) {
-//         if (err) {
-//             return cb(err);
-//         }
-//         cb(null, user);
-//     });
-// });
 
 module.exports = passport;

@@ -1,20 +1,6 @@
-const { validationResult } = require("express-validator");
 const User = require("../models/user.model");
 
-// const validate = (validations) => {
-//     return async(req, res, next) => {
-//         await Promise.all(validations.map((validation) => validation.run(req)));
-
-//         const errors = validationResult(req);
-//         if (errors.isEmpty()) {
-//             return next();
-//         }
-
-//         res.status(400).json({ errors: errors.array() });
-//     };
-// };
-
-const userValidator = {
+const signupValidator = {
     name: {
         isEmpty: {
             negated: true,
@@ -46,7 +32,7 @@ const userValidator = {
             },
         },
         custom: {
-            options: async(value) => {
+            options: async(value, { req }) => {
                 if (!value.match(/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{4,}$/gim)) {
                     throw new Error(
                         'Username must contain only letters, numbers and special characters: "." (dot) and "_" (underscore).'
@@ -79,11 +65,11 @@ const userValidator = {
             },
         },
         trim: true,
-        normalizeEmail: {
-            options: {
-                gmail_remove_dots: false,
-            },
-        },
+        normalizeEmail: true, //{
+        // options: {
+        //     gmail_remove_dots: false,
+        // },
+        //},
         escape: true,
     },
     password: {
@@ -138,7 +124,7 @@ const userValidator = {
         },
         trim: true,
         escape: true,
-    },
+    }
     // orgId: {
     //     isEmpty: {
     //         negated: true,
@@ -150,4 +136,4 @@ const userValidator = {
     // },
 };
 
-module.exports = userValidator;
+module.exports = signupValidator;

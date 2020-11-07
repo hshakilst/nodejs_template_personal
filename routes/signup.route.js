@@ -1,16 +1,16 @@
 const express = require("express");
 const appRoot = require("app-root-path");
-const { checkSchema, validationResult } = require("express-validator");
+const { checkSchema } = require("express-validator");
 const tokenController = require(appRoot + "/controllers/token.controller");
-const userValidator = require(appRoot + "/validators/user.validator");
+const validator = require(appRoot + "/validators/index.validator");
 const userController = require(appRoot + "/controllers/user.controller");
 const mailTransporter = require(appRoot + '/modules/nodemailer');
-
 const router = express.Router();
 
-router.post("/", checkSchema(userValidator), (req, res, next) => {
-    const errors = validationResult(req);
-    if (errors.isEmpty()) {
+router.post("/",
+    checkSchema(validator.signupValidator),
+    validator.validate,
+    (req, res, next) => {
         userController.insertOne(req, res, next)
             .then(user => {
                 tokenController.generateToken(user._id)
@@ -33,7 +33,6 @@ router.post("/", checkSchema(userValidator), (req, res, next) => {
             .catch((error) => {
                 next(error);
             });
-    } else res.status(400).json({ errors: errors.array() });
-});
+    });
 
 module.exports = router;

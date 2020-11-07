@@ -152,7 +152,7 @@ app.use(function(err, req, res, next) {
     );
     // render the error page
     res.status(err.status || 500);
-    res.json({ code: err.code || 500, msg: err.message });
+    res.json({ code: err.code || 500, message: err.message });
 });
 
 app.listen(process.env.PORT, function() {
