@@ -1,6 +1,0 @@
-1. Add company model, controller and validator
-2. Add feature: 
-    #Password reset
-    #verify account
-    #two factor authentication
-    #email notification 

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const TokenSchema = new mongoose.Schema({
+const ResetTokenSchema = new mongoose.Schema({
     _userId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
@@ -8,6 +8,11 @@ const TokenSchema = new mongoose.Schema({
     },
     code: {
         type: String,
+        required: true,
+    },
+    used: {
+        type: Boolean,
+        default: false,
         required: true,
     },
     createdAt: {
@@ -18,4 +23,4 @@ const TokenSchema = new mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model("Token", TokenSchema);
+module.exports = mongoose.model("ResetToken", ResetTokenSchema);
