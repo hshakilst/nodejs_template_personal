@@ -23,9 +23,10 @@ router.get("/verification/resend", (req, res, next) => {
      * by verification/:token middleware.
      */
     userController
-        .resendToken(req)
+        .resendActivationToken(req)
         .then((info) => {
-            res.json(info);
+            console.log(info);
+            return res.json(info);
         })
         .catch((error) => {
             next(error);
@@ -47,7 +48,31 @@ router.get("/verification/:token", (req, res, next) => {
 });
 
 router.get("/forgot", (req, res, next) => {
+    /**
+     * TODO: Validate token.
+     */
+    userController
+        .resetPassword(req)
+        .then((info) => {
+            res.json(info);
+        })
+        .catch((error) => {
+            next(error);
+        });
+});
 
+router.post("/forgot/:token", (req, res, next) => {
+    /**
+     * TODO: Validate token.
+     */
+    userController
+        .verifyResetPassword(req)
+        .then((info) => {
+            res.json(info);
+        })
+        .catch((error) => {
+            next(error);
+        });
 });
 
 module.exports = router;

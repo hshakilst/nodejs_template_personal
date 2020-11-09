@@ -45,5 +45,32 @@ module.exports = {
                 return error;
             });
     },
-    sendPasswordResetToken: {},
+    sendPasswordResetToken: async function(token, user) {
+        let link = `http://127.0.0.1:3000/user/forgot/${token}`;
+        let transporter = initMailInstance();
+        return await transporter
+            .sendMail({
+                from: '"ERPSORS" <noreply@erpsors.com>', // sender address
+                to: user.email, // list of receivers
+                subject: "ERPSORS – Account Verification", // Subject line
+                text: `
+        Hello ${user.username},
+        
+        You recently requested to reset your password for your account on erpsors.com. Click the link below to reset it.
+        
+        ${link}
+
+        If you did not request a password reset, please ignore this email or let us know.
+        
+        Kind Regards,
+        ERP SORS Team`, // plain text body
+                // html: process.env.EMAIL_TEMPLATE, // html body
+            })
+            .then((info) => {
+                return info;
+            })
+            .catch((error) => {
+                return error;
+            });
+    },
 };

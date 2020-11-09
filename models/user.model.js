@@ -24,6 +24,7 @@ const UserSchema = new mongoose.Schema({
         type: String,
         enum: ["Employee", "Manager", "Admin"],
         default: "Employee",
+        required: true,
     },
     avatarUrl: {
         type: String,
@@ -35,20 +36,12 @@ const UserSchema = new mongoose.Schema({
         required: true,
 
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    }
     // orgId: {
     //     type: String,
     //     required: true,
     //     unique: true,
     // }
-});
+}, { timestamps: true });
 
 UserSchema.pre("save", async function(next) {
     if (this.isModified("password") || this.isNew) {

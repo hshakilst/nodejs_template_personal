@@ -6,16 +6,20 @@ const TokenSchema = new mongoose.Schema({
         required: true,
         ref: "User",
     },
+    type: {
+        type: String,
+        enum: ["activation", "password_reset"],
+        required: true,
+    },
     code: {
         type: String,
         required: true,
     },
-    createdAt: {
-        type: Date,
+    used: {
+        type: Boolean,
         required: true,
-        default: Date.now,
-        expires: 43200,
     },
-});
+}, { timestamps: true });
+
 
 module.exports = mongoose.model("Token", TokenSchema);
